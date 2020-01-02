@@ -1,0 +1,616 @@
+{
+	"head": {
+		"vars": [
+			"s",
+			"p",
+			"o",
+			"otherName"
+		]
+	},
+	"results": {
+		"bindings": [
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM1"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#influencedBy"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#BOIE"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Fran&ccedil;ois-Adrien Boieldieu"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#influencedBy"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#DEBU"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Claude Debussy"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#DEBU"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Claude Debussy"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#DEBU"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Claude Debussy"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM1"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#DELI1"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "C.P. Leacuteo Delibes"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#influencedBy"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#DUPR"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Marcel Dupr&eacute;"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#FALL"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Manuel de Falla"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#FALL"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Manuel de Falla"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#influencedBy"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#GLAS"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Philip Glass"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#GRAN"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Enrique Granados"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#GRAN"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Enrique Granados"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#influencedBy"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#MESS"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Olivier Messiaen"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#RAVE"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Maurice Ravel"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#RAVE"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Maurice Ravel"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#influencedBy"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#REIC1"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Steve Reich"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM1"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#influencedBy"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#REIC2"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Anton Reicha"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#RODR"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Joaqu&iacute;n Rodrigo"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#RODR"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Joaqu&iacute;n Rodrigo"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#influencedBy"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#SATI"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Erik Satie"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#TURI"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Joaqu&iacute;n Turina"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#TURI"
+				},
+				"otherName": {
+					"type": "literal",
+					"value": "Joaqu&iacute;n Turina"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM1"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://www.w3.org/2002/07/owl#sameAs"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://dbpedia.org/resource/Adolphe_Adam"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM1"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/mo/musicbrainz"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://musicbrainz.org/artist/ece590a3-ae0e-4311-bcf3-ee07cfb7b4f0"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM1"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/mo/Composer"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM1"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://xmlns.com/foaf/0.1/name"
+				},
+				"o": {
+					"type": "literal",
+					"value": "Adolphe Adam"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM1"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://xmlns.com/foaf/0.1/birthday"
+				},
+				"o": {
+					"type": "literal",
+					"value": "Charles"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://www.w3.org/2002/07/owl#sameAs"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://dbpedia.org/resource/John_Coolidge_Adams"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/mo/musicbrainz"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://musicbrainz.org/artist/94f46f90-f220-458d-acd6-5f14c55ab9b2"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#influencedBy"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#f142"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/mo/Composer"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://xmlns.com/foaf/0.1/birthday"
+				},
+				"o": {
+					"type": "literal",
+					"value": "1947-"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ADAM2"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://xmlns.com/foaf/0.1/name"
+				},
+				"o": {
+					"type": "literal",
+					"value": "John Adams"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://www.w3.org/2002/07/owl#sameAs"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://dbpedia.org/resource/Jehan_Alain"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/mo/musicbrainz"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://musicbrainz.org/artist/a03b8d40-e7b6-4b32-9d7e-b30a86efb018"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/mo/Composer"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://xmlns.com/foaf/0.1/birthday"
+				},
+				"o": {
+					"type": "literal",
+					"value": "Ariste"
+				}
+			},
+			{
+				"s": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#ALAI"
+				},
+				"p": {
+					"type": "uri",
+					"value": "http://xmlns.com/foaf/0.1/name"
+				},
+				"o": {
+					"type": "literal",
+					"value": "Jehan Alain"
+				}
+			}
+		]
+	}
+}

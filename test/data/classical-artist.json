@@ -1,0 +1,152 @@
+{
+	"head": {
+		"vars": [
+			"p",
+			"o"
+		]
+	},
+	"results": {
+		"bindings": [
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://www.w3.org/2002/07/owl#sameAs"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://dbpedia.org/resource/John_Coolidge_Adams"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/mo/musicbrainz"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://musicbrainz.org/artist/94f46f90-f220-458d-acd6-5f14c55ab9b2"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#DEBU"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#FALL"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#influencedBy"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#GLAS"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#GRAN"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#RAVE"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#influencedBy"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#REIC1"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#RODR"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#hasInfluenced"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#TURI"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/classicalmusicnav#influencedBy"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/NET/classicalmusicnav#f142"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"
+				},
+				"o": {
+					"type": "uri",
+					"value": "http://purl.org/ontology/mo/Composer"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://xmlns.com/foaf/0.1/birthday"
+				},
+				"o": {
+					"type": "literal",
+					"value": "1947-"
+				}
+			},
+			{
+				"p": {
+					"type": "uri",
+					"value": "http://xmlns.com/foaf/0.1/name"
+				},
+				"o": {
+					"type": "literal",
+					"value": "John Adams"
+				}
+			}
+		]
+	}
+}
