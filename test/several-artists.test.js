@@ -51,7 +51,12 @@ const queryConfig = {
         variable: "p",
         equals: "cmno:influencedBy"
       },
-      arrow: "from"
+      properties: [
+        {
+          name: "arrow",
+          value: "from"
+        }
+      ]
     },
     {
       from: "s",
@@ -60,7 +65,12 @@ const queryConfig = {
         variable: "p",
         equals: "cmno:hasInfluenced"
       },
-      arrow: "to"
+      properties: [
+        {
+          name: "arrow",
+          value: "to"
+        }
+      ]
     }
   ]
 };
