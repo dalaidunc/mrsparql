@@ -1,17 +1,5 @@
-const { Prefix, PrefixRegister } = require("./prefix.js");
+const { PrefixRegister } = require("./prefix.js");
 const EdgeManager = require("./edge-manager.js");
-/*
-groups,
-nodes,
-edges,
-styling,
-custom rules?
-root node
-TODO: split into different files
-TODO: new way of managing prefixes, with methods to expand prefixes
-Need to create a new class or module for prefixes, managing short/long and method to expand prefixes and expand namespaces
-e.g. foaf:name gets expanded to http://xmlns.com/foaf/0.1/name
-*/
 
 const defaultConfig = {
   edgeSettings: {
@@ -119,7 +107,7 @@ class MrSparql {
       if (typeof from === "object" && typeof to === "object") {
         const fromId = from.value;
         const toId = to.value;
-        const id = [fromId, toId].join("-"); // TODO: take action depending on edge settings in config
+        const id = [fromId, toId].join("-");
         if (this.passesCondition(edgeDef, row)) {
           const props = this.getProperties(edgeDef, row);
           const edge = {

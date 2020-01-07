@@ -1,3 +1,7 @@
+/*
+This class manages prefixes, managing short/long and method to expand prefixes and expand namespaces
+e.g. foaf:name gets expanded to http://xmlns.com/foaf/0.1/name
+*/
 class PrefixRegister {
   constructor() {
     this.lookup = new Map();
