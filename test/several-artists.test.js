@@ -82,4 +82,7 @@ test("can parse query response", () => {
   const queryResponse = JSON.parse(raw);
   const mrsparql = new MrSparql(queryConfig);
   const json = mrsparql.transform(queryResponse);
+  expect(typeof json).toBe('object');
+  expect(json).toHaveProperty('nodes');
+  expect(json).toHaveProperty('edges');
 });

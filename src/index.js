@@ -11,9 +11,16 @@ const defaultConfig = {
 };
 
 class MrSparql {
+  /**
+   * @constructor
+   */
   constructor(config) {
     this.updateConfig(config);
   }
+  /**
+   * Update the configuration to be used by MrSparql
+   * @param {object} config - configuration for transforming a SPARQL response into visualisation-friendly JSON
+   */
   updateConfig(config) {
     this.rawConfig = Object.assign({}, config);
     this.config = Object.assign({}, defaultConfig, config);
@@ -22,6 +29,10 @@ class MrSparql {
       this.prefixRegister.loadPrefixStrings(this.config.prefixes);
     }
   }
+  /**
+   * Transform the SPARQL response into an object with an array for nodes and an array for edges
+   * @param {object} response - a SPARQL JSON response
+   */
   transform(response) {
     this.nodesMap = new Map();
     this.edgeManager = new EdgeManager();
@@ -35,6 +46,11 @@ class MrSparql {
     };
     return json;
   }
+  /**
+   * Checks to see if a SPARQL row passes the conditions set out in the definition
+   * @param {object} def - the definition object containing the condition for the parameter under scrutiny
+   * @param {object} row  - a result row (object within an array) from the SPARQL response
+   */
   passesCondition(def, row) {
     const { condition } = def;
     if (condition) {
@@ -61,6 +77,11 @@ class MrSparql {
     }
     return true;
   }
+  /**
+   * Get all the properties for a specified node or edge
+   * @param {object} itemDef - the definition object for the item (will eventually represent a node or edge)
+   * @param {object} row - a result row (object within an array) from the SPARQL response
+   */
   getProperties(itemDef, row) {
     const props = {};
     if (Array.isArray(itemDef.properties)) {
@@ -79,6 +100,10 @@ class MrSparql {
     }
     return props;
   }
+  /**
+   * Extract all nodes and their properties from a SPARQL result row
+   * @param {object} row - a result row (object within an array) from the SPARQL response
+   */
   getNodes(row) {
     this.config.nodes.forEach(nodeDef => {
       const nodeItem = row[nodeDef.variable];
@@ -100,6 +125,10 @@ class MrSparql {
       }
     });
   }
+  /**
+   * Extract all edges and their properties from a SPARQL result row
+   * @param {object} row - a result row (object within an array) from the SPARQL response
+   */
   getEdges(row) {
     this.config.edges.forEach(edgeDef => {
       const from = row[edgeDef.from];
