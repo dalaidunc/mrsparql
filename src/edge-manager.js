@@ -39,10 +39,10 @@ class EdgeManager {
       .join("-");
   }
   /**
-   * Boolean to determine if the bundling strategy is unidirectional or not
+   * Shorthand syntax to get the bundling strategy type
    */
-  get _isUnidirectional() {
-    return this.settings.bundlingStrategy.type === "unidirectional";
+  get strategyType() {
+    return this.settings.bundlingStrategy.type;
   }
   /**
    * Get the edge from the current edge map
@@ -50,7 +50,8 @@ class EdgeManager {
    * @returns {object} an edge
    */
   getEdge(id) {
-    if (this._isUnidirectional) {
+    // TODO: consider how this should take into account count suffixes on IDs
+    if (this.strategyType === 'unidirectional') {
       return this.edgeMap.get(id) || this.edgeMap.get(this._reverseId(id));
     } else {
       return this.edgeMap.get(id);
@@ -62,12 +63,23 @@ class EdgeManager {
    * @returns {string} whatever the next ID should be 
    */
   nextId(id) {
-    if (this._isUnidirectional) {
-      return [id, count].join("-");
-    } else {
+    // unidirectional: id1-id2 is the same as id2-id1, next id should be id1-id2-count
+    // bidirectional id1-id2-count or id2-id1-count
+    // allow: id1-id2-count
+    if (this.strategyType === 'unidirectional') {
+      const reverseId = this._reverseId(id);
+      const safeId = this.edgeIdCounter.has(id) ? id : (this.edgeIdCounter.has(reverseId) ? reverseId : id);
+      const count = this.edgeIdCounter.get(safeId) || 0;
+      this.edgeIdCounter.set(safeId, count + 1);
+      return safeId;
+    } else if (this.strategyType === 'bidirectional') {
       const count = this.edgeIdCounter.get(id) || 0;
       this.edgeIdCounter.set(id, count + 1);
       return id;
+    } else {
+      const count = (this.edgeIdCounter.get(id) || 0) + 1;
+      this.edgeIdCounter.set(id, count);
+      return [id, count].join("-");
     }
   }
   /**
