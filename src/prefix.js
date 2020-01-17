@@ -84,6 +84,7 @@ class PrefixRegister {
 
 /**
  * A SPARQL prefix object created from a prefix string representation
+ * TODO: should handle blank prefix label (becomes the default prefix)
  * @class
  */
 class Prefix {
@@ -103,7 +104,7 @@ class Prefix {
   parsePrefixString() {
     const matches = this.prefixString.trim().match(this._prefixRegex);
     this.short = matches[1];
-    this.long = matches[2];
+    this.long = matches[2].replace(/[<>]/g, '');
     this.representations.push(matches[1], matches[2]);
   }
   /**

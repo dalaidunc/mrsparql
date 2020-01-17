@@ -1,5 +1,6 @@
 const { PrefixRegister } = require("./prefix.js");
 const EdgeManager = require("./edge-manager.js");
+const parser = require('./parser.js');
 
 const defaultConfig = {
   edgeSettings: {
@@ -11,6 +12,9 @@ const defaultConfig = {
 };
 
 class MrSparql {
+  static sparql() {
+    return parser.apply(null, arguments);
+  }
   /**
    * @constructor
    */
