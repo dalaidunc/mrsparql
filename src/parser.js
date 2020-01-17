@@ -57,7 +57,6 @@ function parser(queryString) {
       currentToken += currentChar;
       if (currentChar === ">") {
         mode = null;
-        submode = null;
         prefixes.push(new Prefix(currentToken));
       }
     }
