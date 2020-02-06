@@ -21,6 +21,8 @@ describe("parses prefixes", () => {
 
   const parsed = sparql(query);
 
+  console.log(parsed);
+
   test("gets prefixes from query", () => {
     expect(Array.isArray(parsed.prefixes)).toBe(true)
     expect(parsed.prefixes[0].short).toBe('cmn');
