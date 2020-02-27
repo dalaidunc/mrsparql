@@ -1,6 +1,6 @@
 const { PrefixRegister } = require("./prefix.js");
 const EdgeManager = require("./edge-manager.js");
-const parser = require('./parser.js');
+const parser = require("./parser.js");
 
 const defaultConfig = {
   edgeSettings: {
@@ -15,11 +15,8 @@ class MrSparql {
   static sparql() {
     return parser.apply(null, arguments);
   }
-  /**
-   * @constructor
-   */
-  constructor(config) {
-    this.updateConfig(config);
+  constructor(...args) {
+    this.updateConfig(...args);
   }
   /**
    * Update the configuration to be used by MrSparql
@@ -32,6 +29,136 @@ class MrSparql {
     if (Array.isArray(this.config.prefixes)) {
       this.prefixRegister.loadPrefixStrings(this.config.prefixes);
     }
+  }
+  /**
+   * Transform the SPARQL response into an object with an array for nodes and an array for edges
+   * @param {object} response - a SPARQL JSON response
+   */
+  transform(response) {
+    this.nodesMap = new Map();
+    this.edgeManager = new EdgeManager();
+    this.processRows(response);
+    const json = {
+      nodes: Array.from(this.nodesMap.values()),
+      edges: this.edgeManager.getEdges()
+    };
+    return json;
+  }
+}
+
+// TODO: work on this class, simple config, probably don't want to export both classes but somehow get the class to choose strategy
+class MrSparqlSimple extends MrSparql {
+  /**
+   * @constructor
+   */
+  constructor(config, query) {
+    super(config, query);
+    this.updateConfig(config, query);
+  }
+  /**
+   * Update the configuration to be used by MrSparql
+   * @param {object} config - configuration for transforming a SPARQL response into visualisation-friendly JSON
+   */
+  updateConfig(config, query) {
+    super.updateConfig(config);
+    this.rawQuery = query;
+    this.parsedQuery = parser(query);
+    this.parsedQuery.prefixes.forEach(prefix => {
+      this.prefixRegister.loadPrefix(prefix);
+    });
+  }
+  processRows(response) {
+    response.results.bindings.forEach(row => {
+      this.getItems(row);
+    });
+  }
+  getProcessedTriples(row) {
+    const processedTriples = [];
+    const keys = ["subject", "predicate", "object"];
+    this.parsedQuery.triples.forEach(queryTriple => {
+      const processed = {};
+      queryTriple.forEach((part, index) => {
+        const key = keys[index];
+        let variable, value;
+        if (part.charAt(0) === "?") {
+          variable = part.substring(1);
+          const sparqlObjectResult = row[part.substring(1)];
+          value =
+            typeof sparqlObjectResult === "object"
+              ? sparqlObjectResult.value
+              : null;
+        } else {
+          variable = part;
+          value = part;
+        }
+        processed[key] = {
+          value,
+          variable
+        };
+      });
+      processedTriples.push(processed);
+    });
+    return processedTriples;
+  }
+  getItems(row) {
+    // check, is this row defining relationships or properties?
+    const isRelationship = triple => {
+      return this.config.edges.some(edgeConfig => {
+        return edgeConfig.matches.some(match => {
+          // expand prefix
+          return this.prefixRegister.isUriMatch(triple.predicate.value, match);
+        });
+      });
+    };
+    const triples = this.getProcessedTriples(row);
+    triples.forEach(triple => {
+      if (isRelationship(triple)) {
+        // then set nodes
+        ["subject", "object"].forEach(key => {
+          const { variable, value } = triple[key];
+          const nodeDef = this.config.nodes[variable];
+          if (nodeDef && !this.nodesMap.has(value)) {
+            this.nodesMap.set(value, {
+              id: value,
+              group: nodeDef.group,
+              properties: {}
+            });
+          }
+        });
+        const edgeId = [triple.subject.value, triple.object.value].join("-");
+        this.edgeManager.addEdge({
+          id: edgeId,
+          from: triple.subject.value,
+          to: triple.object.value
+        });
+      } else {
+        // o is a property (p) of s
+        // TODO: too many things are turning into nodes
+        const id = triple.subject.value;
+        const node = this.nodesMap.get(id) || { id, properties: {} };
+        node.properties[triple.predicate.value] = triple.object.value;
+        this.nodesMap.set(id, node);
+      }
+    });
+  }
+}
+
+class MrSparqlVerbose extends MrSparql {
+  static sparql() {
+    return parser.apply(null, arguments);
+  }
+  /**
+   * @constructor
+   */
+  constructor(config) {
+    super(config);
+    this.updateConfig(config);
+  }
+  processRows(response) {
+    response.results.bindings.forEach(row => {
+      this.getNodes(row);
+      this.getEdges(row);
+    });
   }
   /**
    * Transform the SPARQL response into an object with an array for nodes and an array for edges
@@ -156,4 +283,12 @@ class MrSparql {
   }
 }
 
-module.exports = MrSparql;
+// This is to inherit static methods
+Object.setPrototypeOf(MrSparqlSimple, MrSparql);
+Object.setPrototypeOf(MrSparqlVerbose, MrSparql);
+
+module.exports = function(config, query) {
+  return config.verbose
+    ? new MrSparqlVerbose(config)
+    : new MrSparqlSimple(config, query);
+};
