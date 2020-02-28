@@ -138,4 +138,6 @@ test("can parse query response, simple config", () => {
   expect(json).toHaveProperty('edges');
   expect(json.edges.length).toBe(21);
   expect(json.nodes.length).toBe(18);
+  const foundNode = json.nodes.find(node => node.id === 'http://purl.org/NET/classicalmusicnav#SATI');
+  expect(foundNode.properties['foaf:name']).toBe('Erik Satie');
 })

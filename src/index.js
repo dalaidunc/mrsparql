@@ -11,12 +11,20 @@ const defaultConfig = {
   }
 };
 
+/**
+ * @class
+ */
 class MrSparql {
   static sparql() {
     return parser.apply(null, arguments);
   }
-  constructor(...args) {
-    this.updateConfig(...args);
+  /**
+   * @constructor
+   * @param {object} config a verbose or simple MrSparql JSON config
+   * @param {string} query for simple mode only, the query string of the entire SPARQL query relating to the response to be parsed
+   */
+  constructor(config, query) {
+    this.updateConfig(config, query);
   }
   /**
    * Update the configuration to be used by MrSparql
@@ -32,7 +40,7 @@ class MrSparql {
   }
   /**
    * Transform the SPARQL response into an object with an array for nodes and an array for edges
-   * @param {object} response - a SPARQL JSON response
+   * @param {object} response a SPARQL JSON response
    */
   transform(response) {
     this.nodesMap = new Map();
@@ -46,10 +54,14 @@ class MrSparql {
   }
 }
 
-// TODO: work on this class, simple config, probably don't want to export both classes but somehow get the class to choose strategy
+/**
+ * @class
+ */
 class MrSparqlSimple extends MrSparql {
   /**
    * @constructor
+   * @param {object} config a simple MrSparql JSON config
+   * @param {string} query the query string of the entire SPARQL query relating to the response to be parsed
    */
   constructor(config, query) {
     super(config, query);
@@ -57,7 +69,8 @@ class MrSparqlSimple extends MrSparql {
   }
   /**
    * Update the configuration to be used by MrSparql
-   * @param {object} config - configuration for transforming a SPARQL response into visualisation-friendly JSON
+   * @param {object} config  configuration for transforming a SPARQL response into visualisation-friendly JSON
+   * @param {string} query the query string of the entire SPARQL query relating to the response to be parsed
    */
   updateConfig(config, query) {
     super.updateConfig(config);
@@ -67,11 +80,20 @@ class MrSparqlSimple extends MrSparql {
       this.prefixRegister.loadPrefix(prefix);
     });
   }
+  /**
+   * parses the SPARQL response and creates visualisation-friendly JSON
+   * @param {object} response A SPARQL JSON response
+   */
   processRows(response) {
     response.results.bindings.forEach(row => {
       this.getItems(row);
     });
   }
+  /**
+   * Using the parsed query and SPARQL row, transform the row to an array of processed triples,
+   * A processed triple contains the row value paired with the corresponding variable name from the query.
+   * @param {object} row A row defining variable keys and response values from the SPARQL response
+   */
   getProcessedTriples(row) {
     const processedTriples = [];
     const keys = ["subject", "predicate", "object"];
@@ -80,7 +102,8 @@ class MrSparqlSimple extends MrSparql {
       queryTriple.forEach((part, index) => {
         const key = keys[index];
         let variable, value;
-        if (part.charAt(0) === "?") {
+        const isVariable = part.charAt(0) === '?';
+        if (isVariable) {
           variable = part.substring(1);
           const sparqlObjectResult = row[part.substring(1)];
           value =
@@ -93,7 +116,9 @@ class MrSparqlSimple extends MrSparql {
         }
         processed[key] = {
           value,
-          variable
+          variable,
+          part,
+          isVariable
         };
       });
       // validate
@@ -102,7 +127,7 @@ class MrSparqlSimple extends MrSparql {
         const rowHasValue = rowHasKey && row[processed[key].variable].hasOwnProperty(
           "value"
         );
-        return rowHasValue;
+        return rowHasValue || !processed[key].isVariable;
       });
       if (isValid) {
         processedTriples.push(processed);
@@ -110,6 +135,10 @@ class MrSparqlSimple extends MrSparql {
     });
     return processedTriples;
   }
+  /**
+   * create nodes and edges from the current row in the SPARQL response
+   * @param {object} row a row from the SPARQL response array
+   */
   getItems(row) {
     // check, is this row defining relationships or properties?
     const isRelationship = triple => {
@@ -130,7 +159,6 @@ class MrSparqlSimple extends MrSparql {
     const triples = this.getProcessedTriples(row);
     triples.forEach(triple => {
       if (isRelationship(triple)) {
-        // then set nodes
         ["subject", "object"].forEach(key => {
           const { variable, value } = triple[key];
           const nodeDef = this.config.nodes[variable];
@@ -159,17 +187,25 @@ class MrSparqlSimple extends MrSparql {
   }
 }
 
+/**
+ * @class
+ */
 class MrSparqlVerbose extends MrSparql {
   static sparql() {
     return parser.apply(null, arguments);
   }
   /**
    * @constructor
+   * @param {object} config the MrSparql JSON config explaining how to map from a SPARQL response to nodes/edges
    */
   constructor(config) {
     super(config);
     this.updateConfig(config);
   }
+  /**
+   * process a SPARQL response into nodes and edges
+   * @param {object} response a SPARQL JSON response
+   */
   processRows(response) {
     response.results.bindings.forEach(row => {
       this.getNodes(row);
@@ -178,7 +214,7 @@ class MrSparqlVerbose extends MrSparql {
   }
   /**
    * Transform the SPARQL response into an object with an array for nodes and an array for edges
-   * @param {object} response - a SPARQL JSON response
+   * @param {object} response a SPARQL JSON response
    */
   transform(response) {
     this.nodesMap = new Map();
@@ -195,8 +231,8 @@ class MrSparqlVerbose extends MrSparql {
   }
   /**
    * Checks to see if a SPARQL row passes the conditions set out in the definition
-   * @param {object} def - the definition object containing the condition for the parameter under scrutiny
-   * @param {object} row  - a result row (object within an array) from the SPARQL response
+   * @param {object} def the definition object containing the condition for the parameter under scrutiny
+   * @param {object} row  a result row (object within an array) from the SPARQL response
    */
   passesCondition(def, row) {
     const { condition } = def;
@@ -226,8 +262,8 @@ class MrSparqlVerbose extends MrSparql {
   }
   /**
    * Get all the properties for a specified node or edge
-   * @param {object} itemDef - the definition object for the item (will eventually represent a node or edge)
-   * @param {object} row - a result row (object within an array) from the SPARQL response
+   * @param {object} itemDef the definition object for the item (will eventually represent a node or edge)
+   * @param {object} row a result row (object within an array) from the SPARQL response
    */
   getProperties(itemDef, row) {
     const props = {};
@@ -249,7 +285,7 @@ class MrSparqlVerbose extends MrSparql {
   }
   /**
    * Extract all nodes and their properties from a SPARQL result row
-   * @param {object} row - a result row (object within an array) from the SPARQL response
+   * @param {object} row a result row (object within an array) from the SPARQL response
    */
   getNodes(row) {
     this.config.nodes.forEach(nodeDef => {
@@ -274,7 +310,7 @@ class MrSparqlVerbose extends MrSparql {
   }
   /**
    * Extract all edges and their properties from a SPARQL result row
-   * @param {object} row - a result row (object within an array) from the SPARQL response
+   * @param {object} row a result row (object within an array) from the SPARQL response
    */
   getEdges(row) {
     this.config.edges.forEach(edgeDef => {
