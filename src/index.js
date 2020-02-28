@@ -96,19 +96,36 @@ class MrSparqlSimple extends MrSparql {
           variable
         };
       });
-      processedTriples.push(processed);
+      // validate
+      const isValid = keys.every(key => {
+        const rowHasKey = row.hasOwnProperty(processed[key].variable);
+        const rowHasValue = rowHasKey && row[processed[key].variable].hasOwnProperty(
+          "value"
+        );
+        return rowHasValue;
+      });
+      if (isValid) {
+        processedTriples.push(processed);
+      }
     });
     return processedTriples;
   }
   getItems(row) {
     // check, is this row defining relationships or properties?
     const isRelationship = triple => {
-      return this.config.edges.some(edgeConfig => {
+      const someMatches = this.config.edges.some(edgeConfig => {
         return edgeConfig.matches.some(match => {
           // expand prefix
-          return this.prefixRegister.isUriMatch(triple.predicate.value, match);
+          const containsNodes =
+            this.config.nodes.hasOwnProperty(triple.subject.variable) &&
+            this.config.nodes.hasOwnProperty(triple.object.variable);
+          return (
+            containsNodes &&
+            this.prefixRegister.isUriMatch(triple.predicate.value, match)
+          );
         });
       });
+      return someMatches;
     };
     const triples = this.getProcessedTriples(row);
     triples.forEach(triple => {
@@ -133,7 +150,6 @@ class MrSparqlSimple extends MrSparql {
         });
       } else {
         // o is a property (p) of s
-        // TODO: too many things are turning into nodes
         const id = triple.subject.value;
         const node = this.nodesMap.get(id) || { id, properties: {} };
         node.properties[triple.predicate.value] = triple.object.value;

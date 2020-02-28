@@ -112,7 +112,7 @@ const queryConfig = {
   ]
 };
 
-test("can parse query response, verbose", () => {
+test("can parse query response, verbose config", () => {
   const raw = fs.readFileSync(
     __dirname + "/data/several-composers-other-name.json"
   );
@@ -126,7 +126,7 @@ test("can parse query response, verbose", () => {
   expect(json.nodes.length).toBe(18);
 });
 
-test("can parse query response", () => {
+test("can parse query response, simple config", () => {
   const raw = fs.readFileSync(
     __dirname + "/data/several-composers-other-name.json"
   );
@@ -138,5 +138,4 @@ test("can parse query response", () => {
   expect(json).toHaveProperty('edges');
   expect(json.edges.length).toBe(21);
   expect(json.nodes.length).toBe(18);
-  // TODO FIXME, too many things are being converted to nodes
 })
