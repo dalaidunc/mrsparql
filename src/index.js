@@ -91,8 +91,8 @@ class MrSparqlSimple extends MrSparql {
   }
   /**
    * Using the parsed query and SPARQL row, transform the row to an array of processed triples,
-   * A processed triple contains the row value paired with the corresponding variable name from the query.
    * @param {object} row A row defining variable keys and response values from the SPARQL response
+   * @returns {object} a processed triple containing the row value paired with corresponding variable name for each part
    */
   getProcessedTriples(row) {
     const processedTriples = [];
@@ -102,7 +102,7 @@ class MrSparqlSimple extends MrSparql {
       queryTriple.forEach((part, index) => {
         const key = keys[index];
         let variable, value;
-        const isVariable = part.charAt(0) === '?';
+        const isVariable = part.charAt(0) === "?";
         if (isVariable) {
           variable = part.substring(1);
           const sparqlObjectResult = row[part.substring(1)];
@@ -124,9 +124,8 @@ class MrSparqlSimple extends MrSparql {
       // validate
       const isValid = keys.every(key => {
         const rowHasKey = row.hasOwnProperty(processed[key].variable);
-        const rowHasValue = rowHasKey && row[processed[key].variable].hasOwnProperty(
-          "value"
-        );
+        const rowHasValue =
+          rowHasKey && row[processed[key].variable].hasOwnProperty("value");
         return rowHasValue || !processed[key].isVariable;
       });
       if (isValid) {
@@ -136,51 +135,83 @@ class MrSparqlSimple extends MrSparql {
     return processedTriples;
   }
   /**
+   * Is the processed triple defining a relationship (with a node at each end) or is it defining
+   * properties of a node?
+   * @param {object} triple a processed triple often from a SPARQL response row
+   * @returns {boolean}
+   */
+  findRelationship(triple) {
+    const foundRelationship = this.config.edges.find(edgeConfig => {
+      return edgeConfig.matches.some(match => {
+        // expand prefix
+        const containsNodes =
+          this.config.nodes.hasOwnProperty(triple.subject.variable) &&
+          this.config.nodes.hasOwnProperty(triple.object.variable);
+        return (
+          containsNodes &&
+          this.prefixRegister.isUriMatch(triple.predicate.value, match)
+        );
+      });
+    });
+    return foundRelationship;
+  }
+  /**
    * create nodes and edges from the current row in the SPARQL response
    * @param {object} row a row from the SPARQL response array
    */
   getItems(row) {
     // check, is this row defining relationships or properties?
-    const isRelationship = triple => {
-      const someMatches = this.config.edges.some(edgeConfig => {
-        return edgeConfig.matches.some(match => {
-          // expand prefix
-          const containsNodes =
-            this.config.nodes.hasOwnProperty(triple.subject.variable) &&
-            this.config.nodes.hasOwnProperty(triple.object.variable);
-          return (
-            containsNodes &&
-            this.prefixRegister.isUriMatch(triple.predicate.value, match)
-          );
-        });
-      });
-      return someMatches;
-    };
     const triples = this.getProcessedTriples(row);
     triples.forEach(triple => {
-      if (isRelationship(triple)) {
+      const foundRelationship = this.findRelationship(triple);
+      if (foundRelationship) {
         ["subject", "object"].forEach(key => {
           const { variable, value } = triple[key];
           const nodeDef = this.config.nodes[variable];
           if (nodeDef && !this.nodesMap.has(value)) {
-            this.nodesMap.set(value, {
+            const groupDef = this.config.groups[nodeDef.group];
+            const groupProperties = groupDef.properties || {};
+            const node = Object.assign({}, groupProperties, {
               id: value,
-              group: nodeDef.group,
-              properties: {}
+              group: nodeDef.group
             });
+            this.nodesMap.set(value, node);
           }
         });
         const edgeId = [triple.subject.value, triple.object.value].join("-");
-        this.edgeManager.addEdge({
+        const edgeProperties = foundRelationship.properties || {};
+        const edge = Object.assign({}, edgeProperties, {
           id: edgeId,
           from: triple.subject.value,
           to: triple.object.value
         });
+        this.edgeManager.addEdge(edge);
       } else {
         // o is a property (p) of s
         const id = triple.subject.value;
         const node = this.nodesMap.get(id) || { id, properties: {} };
-        node.properties[triple.predicate.value] = triple.object.value;
+        // check if property is defined in config then we can define on node object first-level (otheriwse dump on properties object)
+        const config = this.config.nodes[triple.subject.variable];
+        let assigned = false;
+        for (let key in config) {
+          const val = config[key];
+          if (typeof val === 'object') {
+            if (val.matches) {
+              const isMatch = this.prefixRegister.isUriMatch(triple[val.matches.key].value, val.matches.value);
+              if (isMatch) {
+                node[key] = triple.object.value;
+                assigned = true;
+                break;
+              }
+            }
+          }
+        }
+        if (!assigned) {
+          if (!node.properties) {
+            node.properties = {};
+          }
+          node.properties[triple.predicate.value] = triple.object.value;
+        }
         this.nodesMap.set(id, node);
       }
     });
