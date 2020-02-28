@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>parser.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EdgeManager.html">EdgeManager</a><ul class='methods'><li data-type='method'><a href="EdgeManager.html#_reverseId">_reverseId</a></li><li data-type='method'><a href="EdgeManager.html#addEdge">addEdge</a></li><li data-type='method'><a href="EdgeManager.html#getEdge">getEdge</a></li><li data-type='method'><a href="EdgeManager.html#nextId">nextId</a></li><li data-type='method'><a href="EdgeManager.html#updateSettings">updateSettings</a></li></ul></li><li><a href="MrSparql.html">MrSparql</a><ul class='methods'><li data-type='method'><a href="MrSparql.html#getEdges">getEdges</a></li><li data-type='method'><a href="MrSparql.html#getNodes">getNodes</a></li><li data-type='method'><a href="MrSparql.html#getProperties">getProperties</a></li><li data-type='method'><a href="MrSparql.html#passesCondition">passesCondition</a></li><li data-type='method'><a href="MrSparql.html#transform">transform</a></li><li data-type='method'><a href="MrSparql.html#updateConfig">updateConfig</a></li></ul></li><li><a href="Prefix.html">Prefix</a><ul class='methods'><li data-type='method'><a href="Prefix.html#parsePrefixString">parsePrefixString</a></li><li data-type='method'><a href="Prefix.html#toString">toString</a></li></ul></li><li><a href="PrefixRegister.html">PrefixRegister</a><ul class='methods'><li data-type='method'><a href="PrefixRegister.html#getPrefix">getPrefix</a></li><li data-type='method'><a href="PrefixRegister.html#isPrefixMatch">isPrefixMatch</a></li><li data-type='method'><a href="PrefixRegister.html#isUriMatch">isUriMatch</a></li><li data-type='method'><a href="PrefixRegister.html#loadPrefixStrings">loadPrefixStrings</a></li><li data-type='method'><a href="PrefixRegister.html#qualify">qualify</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#isWhitespace">isWhitespace</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">parser.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const { Prefix } = require("./prefix.js");
+/**
+ * Parses a SPARQL query to get variables, prefixes and IRIs.
+ * No validation to SPARQL spec is done, too big a task for now
+ * And we can consider that a SPARQL query is valid, otherwise we wouldn't have a response to convert
+ * Future could implement SPARQL spec: https://www.w3.org/TR/sparql11-query/#sparqlGrammar
+ */
+
+/**
+ * Check if the character is a whitespace character or not
+ * @param {string} c a single char
+ * @returns {boolean}
+ */
+function isWhitespace(c) {
+  const wsCodes = [0x20, 0x9, 0xd, 0xa];
+  for (let i = 0; i &lt; wsCodes.length; i++) {
+    if (c.charCodeAt(0) === wsCodes[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Only matches english words, so only to be used for SPARQL keywords (PREFIX, SELECT etc.)
+function isWord(c) {
+  return /\w/.test(c);
+}
+
+function parser(queryString) {
+  let index = 0;
+  let mode = null;
+  let currentToken;
+  let currentChar;
+  const queryVariables = [];
+  const prefixes = [];
+  // mode can be seekingToken (null), comment, or other mode
+
+  const modes = {
+    comment() {
+      if (c === "\n") {
+        mode = null;
+      }
+    },
+    token() {
+      if (isWord(currentChar)) {
+        currentToken += currentChar;
+      } else if (isWhitespace(currentChar)) {
+        mode = currentToken.toLowerCase();
+        currentToken = "";
+      } else {
+        throw new SparqlParseError(
+          `Invalid token found: ${currentChar} in ${currentToken}`
+        );
+      }
+    },
+    prefix() {
+      currentToken += currentChar;
+      if (currentChar === ">") {
+        mode = null;
+        prefixes.push(new Prefix(currentToken));
+      }
+    }
+  };
+
+  while (index !== queryString.length) {
+    currentChar = queryString.charAt(index);
+    if (!mode) {
+      // looking for next token
+      if (currentChar === "#") {
+        mode = "comment";
+      } else if (isWord(currentChar)) {
+        currentToken = currentChar;
+        mode = "token";
+      }
+    } else {
+      if (modes[mode]) {
+        modes[mode]();
+      }
+    }
+    index++;
+  }
+  return {
+    prefixes
+  };
+}
+
+module.exports = parser;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Feb 28 2020 14:16:54 GMT+0000 (Greenwich Mean Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

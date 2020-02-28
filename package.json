@@ -4,6 +4,7 @@
   "description": "Transform SPARQL responses into a graph visualisation friendly format",
   "main": "index.js",
   "scripts": {
+    "doc": "jsdoc src/ -c jsdoc.json",
     "test": "jest"
   },
   "repository": {
@@ -29,6 +30,8 @@
   },
   "homepage": "https://github.com/dalaidunc/mrsparql#readme",
   "devDependencies": {
-    "jest": "^24.9.0"
+    "docdash": "^1.2.0",
+    "jest": "^24.9.0",
+    "jsdoc": "^3.6.3"
   }
 }

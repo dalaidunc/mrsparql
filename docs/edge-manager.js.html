@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>edge-manager.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EdgeManager.html">EdgeManager</a><ul class='methods'><li data-type='method'><a href="EdgeManager.html#_reverseId">_reverseId</a></li><li data-type='method'><a href="EdgeManager.html#addEdge">addEdge</a></li><li data-type='method'><a href="EdgeManager.html#getEdge">getEdge</a></li><li data-type='method'><a href="EdgeManager.html#nextId">nextId</a></li><li data-type='method'><a href="EdgeManager.html#updateSettings">updateSettings</a></li></ul></li><li><a href="MrSparql.html">MrSparql</a><ul class='methods'><li data-type='method'><a href="MrSparql.html#getEdges">getEdges</a></li><li data-type='method'><a href="MrSparql.html#getNodes">getNodes</a></li><li data-type='method'><a href="MrSparql.html#getProperties">getProperties</a></li><li data-type='method'><a href="MrSparql.html#passesCondition">passesCondition</a></li><li data-type='method'><a href="MrSparql.html#transform">transform</a></li><li data-type='method'><a href="MrSparql.html#updateConfig">updateConfig</a></li></ul></li><li><a href="Prefix.html">Prefix</a><ul class='methods'><li data-type='method'><a href="Prefix.html#parsePrefixString">parsePrefixString</a></li><li data-type='method'><a href="Prefix.html#toString">toString</a></li></ul></li><li><a href="PrefixRegister.html">PrefixRegister</a><ul class='methods'><li data-type='method'><a href="PrefixRegister.html#getPrefix">getPrefix</a></li><li data-type='method'><a href="PrefixRegister.html#isPrefixMatch">isPrefixMatch</a></li><li data-type='method'><a href="PrefixRegister.html#isUriMatch">isUriMatch</a></li><li data-type='method'><a href="PrefixRegister.html#loadPrefixStrings">loadPrefixStrings</a></li><li data-type='method'><a href="PrefixRegister.html#qualify">qualify</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#isWhitespace">isWhitespace</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">edge-manager.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Manages a collection of edges
+ * @class
+ */
+class EdgeManager {
+  /**
+   * @param {object} settings - settings defining the edge settings
+   * @constructor
+   */
+  constructor(settings) {
+    this.updateSettings(settings);
+    this.edgeMap = new Map();
+    this.edgeIdCounter = new Map();
+  }
+  /**
+   * Update the edge settings
+   * @param {object} settings - object defining edge settings
+   */
+  updateSettings(settings) {
+    this.settings = Object.assign(
+      {
+        bundlingStrategy: {
+          type: "bidirectional", // allow, unidirectional, bidirectional
+          count: true
+        }
+      },
+      settings
+    );
+  }
+  /**
+   * Reverse the ID of and edge so id1-id2 becomes id2-id1
+   * @param {string} id - the ID for an edge
+   * @returns {string}
+   */
+  _reverseId(id) {
+    return id
+      .split("-")
+      .reverse()
+      .join("-");
+  }
+  /**
+   * Shorthand syntax to get the bundling strategy type
+   */
+  get strategyType() {
+    return this.settings.bundlingStrategy.type;
+  }
+  /**
+   * Get the edge from the current edge map
+   * @param {string} id - id of the edge to get
+   * @returns {object} an edge
+   */
+  getEdge(id) {
+    // TODO: consider how this should take into account count suffixes on IDs
+    if (this.strategyType === 'unidirectional') {
+      return this.edgeMap.get(id) || this.edgeMap.get(this._reverseId(id));
+    } else {
+      return this.edgeMap.get(id);
+    }
+  }
+  /**
+   * 
+   * @param {string} id - current ID
+   * @returns {string} whatever the next ID should be 
+   */
+  nextId(id) {
+    // unidirectional: id1-id2 is the same as id2-id1, next id should be id1-id2-count
+    // bidirectional id1-id2-count or id2-id1-count
+    // allow: id1-id2-count
+    if (this.strategyType === 'unidirectional') {
+      const reverseId = this._reverseId(id);
+      const safeId = this.edgeIdCounter.has(id) ? id : (this.edgeIdCounter.has(reverseId) ? reverseId : id);
+      const count = this.edgeIdCounter.get(safeId) || 0;
+      this.edgeIdCounter.set(safeId, count + 1);
+      return safeId;
+    } else if (this.strategyType === 'bidirectional') {
+      const count = this.edgeIdCounter.get(id) || 0;
+      this.edgeIdCounter.set(id, count + 1);
+      return id;
+    } else {
+      const count = (this.edgeIdCounter.get(id) || 0) + 1;
+      this.edgeIdCounter.set(id, count);
+      return [id, count].join("-");
+    }
+  }
+  /**
+   * Add an edge to the manager
+   * @param {object} edge - an object representing an edge to add to the manager
+   */
+  addEdge(edge) {
+    const id = this.nextId(edge.id);
+    edge.id = id;
+    if (this.settings.bundlingStrategy.count) {
+      edge._count = this.edgeIdCounter.get(id) || 1;
+    }
+    this.edgeMap.set(id, edge);
+  }
+  getEdges() {
+    return Array.from(this.edgeMap.values());
+  }
+}
+
+module.exports = EdgeManager;</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Feb 28 2020 14:16:54 GMT+0000 (Greenwich Mean Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>

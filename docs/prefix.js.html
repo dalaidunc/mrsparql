@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>prefix.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EdgeManager.html">EdgeManager</a><ul class='methods'><li data-type='method'><a href="EdgeManager.html#_reverseId">_reverseId</a></li><li data-type='method'><a href="EdgeManager.html#addEdge">addEdge</a></li><li data-type='method'><a href="EdgeManager.html#getEdge">getEdge</a></li><li data-type='method'><a href="EdgeManager.html#nextId">nextId</a></li><li data-type='method'><a href="EdgeManager.html#updateSettings">updateSettings</a></li></ul></li><li><a href="MrSparql.html">MrSparql</a><ul class='methods'><li data-type='method'><a href="MrSparql.html#getEdges">getEdges</a></li><li data-type='method'><a href="MrSparql.html#getNodes">getNodes</a></li><li data-type='method'><a href="MrSparql.html#getProperties">getProperties</a></li><li data-type='method'><a href="MrSparql.html#passesCondition">passesCondition</a></li><li data-type='method'><a href="MrSparql.html#transform">transform</a></li><li data-type='method'><a href="MrSparql.html#updateConfig">updateConfig</a></li></ul></li><li><a href="Prefix.html">Prefix</a><ul class='methods'><li data-type='method'><a href="Prefix.html#parsePrefixString">parsePrefixString</a></li><li data-type='method'><a href="Prefix.html#toString">toString</a></li></ul></li><li><a href="PrefixRegister.html">PrefixRegister</a><ul class='methods'><li data-type='method'><a href="PrefixRegister.html#getPrefix">getPrefix</a></li><li data-type='method'><a href="PrefixRegister.html#isPrefixMatch">isPrefixMatch</a></li><li data-type='method'><a href="PrefixRegister.html#isUriMatch">isUriMatch</a></li><li data-type='method'><a href="PrefixRegister.html#loadPrefixStrings">loadPrefixStrings</a></li><li data-type='method'><a href="PrefixRegister.html#qualify">qualify</a></li></ul></li></ul><h3>Global</h3><ul><li><a href="global.html#isWhitespace">isWhitespace</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">prefix.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * This class manages prefixes, managing short/long and method to expand prefixes and expand namespaces
+ * e.g. foaf:name gets expanded to http://xmlns.com/foaf/0.1/name
+ * @class
+ */
+class PrefixRegister {
+  /**
+   * @constructor
+   */
+  constructor() {
+    this.lookup = new Map();
+    this._allPrefixes = [];
+  }
+  /**
+   * load the prefixes into the register
+   * @param {Array} prefixStrings - array of strings of prefixes
+   */
+  loadPrefixStrings(prefixStrings) {
+    prefixStrings.map(prefixString => {
+      const prefix = new Prefix(prefixString);
+      this.lookup.set(prefix.short, prefix);
+      this.lookup.set(prefix.long, prefix);
+      this._allPrefixes.push(prefix.short, prefix.long);
+    });
+  }
+  /**
+   * get the prefixes for one or more URIs
+   * @param  {...any} uris - get the prefix for a list of URIs
+   * @returns {object | Array} one or more found prefixes
+   */
+  getPrefix(...uris) {
+    let found = [];
+    for (
+      let i = 0;
+      i &lt; this._allPrefixes.length || found.length === uris.length;
+      i++
+    ) {
+      const prefixString = this._allPrefixes[i];
+      uris = uris.filter((uri, index) => {
+        if (uri.startsWith(prefixString)) {
+          found.push(this.lookup.get(prefixString));
+          return false;
+        }
+        return true;
+      });
+    }
+    return found.length === 1 ? found[0] : found;
+  }
+  /**
+   * Qualifies the URI with a full prefix
+   * @param {string} uri - a URI
+   * @returns {string} the full URI with expanded prefix
+   */
+  qualify(uri) {
+    const prefix = this.getPrefix(uri);
+    if (uri.startsWith(prefix.short)) {
+      return prefix.long + uri.substring(prefix.short.length + 1);
+    }
+    return uri;
+  }
+  /**
+   * Checks to see if 2 URIs are using the same prefix
+   * @param {string} uri1
+   * @param {string} uri2
+   * @returns {boolean}
+   */
+  isPrefixMatch(uri1, uri2) {
+    const prefixes = this.getPrefix(uri1, uri2);
+    return prefixes[0] === prefixes[1];
+  }
+  /**
+   * Checks to see if 2 uris are the same (whether they have expanded prefix or not)
+   * @param {string} uri1
+   * @param {string} uri2
+   * @returns {boolean}
+   */
+  isUriMatch(uri1, uri2) {
+    if (uri1 === uri2) {
+      return true;
+    }
+    return this.qualify(uri1) === this.qualify(uri2);
+  }
+}
+
+/**
+ * A SPARQL prefix object created from a prefix string representation
+ * TODO: should handle blank prefix label (becomes the default prefix)
+ * @class
+ */
+class Prefix {
+  /**
+   * @param {string} prefixString - the string representing the prefix (as would be displayed at the top of a turtle file)
+   * @constructor
+   */
+  constructor(prefixString) {
+    this.prefixString = prefixString;
+    this._prefixRegex = /([^:\s]+)\s*:\s*(.+)/;
+    this.representations = [];
+    this.parsePrefixString();
+  }
+  /**
+   * Parses a prefix string into an object representing the long and short forms of the prefix
+   */
+  parsePrefixString() {
+    const matches = this.prefixString.trim().match(this._prefixRegex);
+    this.short = matches[1];
+    this.long = matches[2].replace(/[&lt;>]/g, '');
+    this.representations.push(matches[1], matches[2]);
+  }
+  /**
+   * @returns {string} the string representation of the prefix
+   */
+  toString() {
+    return this.prefixString;
+  }
+}
+
+module.exports = {
+  Prefix,
+  PrefixRegister
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Fri Feb 28 2020 14:16:54 GMT+0000 (Greenwich Mean Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+
+
+</body>
+</html>
