@@ -4,7 +4,7 @@
   "description": "Transform SPARQL responses into a graph visualisation friendly format",
   "main": "index.js",
   "scripts": {
-    "doc": "jsdoc src/ -c jsdoc.json",
+    "doc": "jsdoc src/ -c jsdoc.json --readme README.md",
     "test": "jest"
   },
   "repository": {
