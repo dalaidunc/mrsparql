@@ -3,7 +3,7 @@
 <head>
     
     <meta charset="utf-8">
-    <title>MrSparql - Documentation</title>
+    <title>MrSparqlSimple - Documentation</title>
     
     
     <script src="scripts/prettify/prettify.js"></script>
@@ -32,7 +32,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">MrSparql</h1>
+    <h1 class="page-title">MrSparqlSimple</h1>
     
 
     
@@ -45,7 +45,7 @@
 <header>
     
         <h2>
-        MrSparql
+        MrSparqlSimple
         </h2>
         
     
@@ -59,7 +59,7 @@
 
     
 
-    <h4 class="name" id="MrSparql"><span class="type-signature"></span>new MrSparql<span class="signature">(config, query)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="MrSparqlSimple"><span class="type-signature"></span>new MrSparqlSimple<span class="signature">(config, query)</span><span class="type-signature"></span></h4>
 
     
 
@@ -71,7 +71,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line26">line 26</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line66">line 66</a>
     </li></ul></dd>
     
 
@@ -161,7 +161,7 @@
 
             
 
-            <td class="description last">a verbose or simple MrSparql JSON config</td>
+            <td class="description last">a simple MrSparql JSON config</td>
         </tr>
 
     
@@ -184,7 +184,7 @@
 
             
 
-            <td class="description last">for simple mode only, the query string of the entire SPARQL query relating to the response to be parsed</td>
+            <td class="description last">the query string of the entire SPARQL query relating to the response to be parsed</td>
         </tr>
 
     
@@ -235,7 +235,7 @@
 
     
 
-    <h4 class="name" id="transform"><span class="type-signature"></span>transform<span class="signature">(response)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="findRelationship"><span class="type-signature"></span>findRelationship<span class="signature">(triple)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
 
     
 
@@ -247,7 +247,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line45">line 45</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line143">line 143</a>
     </li></ul></dd>
     
 
@@ -287,7 +287,456 @@
 
 
 <div class="description usertext">
-    Transform the SPARQL response into an object with an array for nodes and an array for edges
+    Is the processed triple defining a relationship (with a node at each end) or is it defining
+properties of a node?
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>triple</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">a processed triple often from a SPARQL response row</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getItems"><span class="type-signature"></span>getItems<span class="signature">(row)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line162">line 162</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    create nodes and edges from the current row in the SPARQL response
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>row</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">a row from the SPARQL response array</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getProcessedTriples"><span class="type-signature"></span>getProcessedTriples<span class="signature">(row)</span><span class="type-signature"> &rarr; {object}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line97">line 97</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    Using the parsed query and SPARQL row, transform the row to an array of processed triples,
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>row</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">A row defining variable keys and response values from the SPARQL response</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    a processed triple containing the row value paired with corresponding variable name for each part
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="processRows"><span class="type-signature"></span>processRows<span class="signature">(response)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line87">line 87</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description usertext">
+    parses the SPARQL response and creates visualisation-friendly JSON
 </div>
 
 
@@ -341,7 +790,7 @@
 
             
 
-            <td class="description last">a SPARQL JSON response</td>
+            <td class="description last">A SPARQL JSON response</td>
         </tr>
 
     
@@ -371,7 +820,7 @@
 
     
 
-    <h4 class="name" id="updateConfig"><span class="type-signature"></span>updateConfig<span class="signature">(config)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="updateConfig"><span class="type-signature"></span>updateConfig<span class="signature">(config, query)</span><span class="type-signature"></span></h4>
 
     
 
@@ -383,7 +832,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="index.js.html">index.js</a>, <a href="index.js.html#line33">line 33</a>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line75">line 75</a>
     </li></ul></dd>
     
 
@@ -478,6 +927,29 @@
             
 
             <td class="description last">configuration for transforming a SPARQL response into visualisation-friendly JSON</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>query</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">the query string of the entire SPARQL query relating to the response to be parsed</td>
         </tr>
 
     
