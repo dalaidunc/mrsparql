@@ -26,6 +26,7 @@ const queryConfigSimple = {
       }
     }
   },
+  // TODO: better to simplify structure and separate literal vs parsed props
   nodes: {
     s: {
       label: {
