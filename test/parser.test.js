@@ -1,5 +1,4 @@
-const MrSparql = require("../src/index");
-const { sparql } = MrSparql;
+const parser = require("../src/parser");
 
 describe("parses prefixes", () => {
 
@@ -19,7 +18,7 @@ describe("parses prefixes", () => {
   LIMIT 100
   `;
 
-  const parsed = sparql(query);
+  const parsed = parser(query);
 
   test("gets prefixes from query", () => {
     expect(Array.isArray(parsed.prefixes)).toBe(true)

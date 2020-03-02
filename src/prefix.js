@@ -12,15 +12,22 @@ class PrefixRegister {
     this._allPrefixes = [];
   }
   /**
+   * Load a prefix object into the register
+   * @param {Prefix} prefix a prefix object
+   */
+  loadPrefix(prefix) {
+    this.lookup.set(prefix.short, prefix);
+    this.lookup.set(prefix.long, prefix);
+    this._allPrefixes.push(prefix.short, prefix.long);
+  }
+  /**
    * load the prefixes into the register
    * @param {Array} prefixStrings - array of strings of prefixes
    */
   loadPrefixStrings(prefixStrings) {
     prefixStrings.map(prefixString => {
       const prefix = new Prefix(prefixString);
-      this.lookup.set(prefix.short, prefix);
-      this.lookup.set(prefix.long, prefix);
-      this._allPrefixes.push(prefix.short, prefix.long);
+      this.loadPrefix(prefix);
     });
   }
   /**
@@ -104,7 +111,7 @@ class Prefix {
   parsePrefixString() {
     const matches = this.prefixString.trim().match(this._prefixRegex);
     this.short = matches[1];
-    this.long = matches[2].replace(/[<>]/g, '');
+    this.long = matches[2].replace(/[<>]/g, "");
     this.representations.push(matches[1], matches[2]);
   }
   /**

@@ -1,6 +1,6 @@
 const { PrefixRegister } = require("./prefix.js");
 const EdgeManager = require("./edge-manager.js");
-const parser = require('./parser.js');
+const parser = require("./parser.js");
 
 const defaultConfig = {
   edgeSettings: {
@@ -11,15 +11,20 @@ const defaultConfig = {
   }
 };
 
+/**
+ * @class
+ */
 class MrSparql {
   static sparql() {
     return parser.apply(null, arguments);
   }
   /**
    * @constructor
+   * @param {object} config a verbose or simple MrSparql JSON config
+   * @param {string} query for simple mode only, the query string of the entire SPARQL query relating to the response to be parsed
    */
-  constructor(config) {
-    this.updateConfig(config);
+  constructor(config, query) {
+    this.updateConfig(config, query);
   }
   /**
    * Update the configuration to be used by MrSparql
@@ -35,7 +40,212 @@ class MrSparql {
   }
   /**
    * Transform the SPARQL response into an object with an array for nodes and an array for edges
-   * @param {object} response - a SPARQL JSON response
+   * @param {object} response a SPARQL JSON response
+   */
+  transform(response) {
+    this.nodesMap = new Map();
+    this.edgeManager = new EdgeManager();
+    this.processRows(response);
+    const json = {
+      nodes: Array.from(this.nodesMap.values()),
+      edges: this.edgeManager.getEdges()
+    };
+    return json;
+  }
+}
+
+/**
+ * @class
+ */
+class MrSparqlSimple extends MrSparql {
+  /**
+   * @constructor
+   * @param {object} config a simple MrSparql JSON config
+   * @param {string} query the query string of the entire SPARQL query relating to the response to be parsed
+   */
+  constructor(config, query) {
+    super(config, query);
+    this.updateConfig(config, query);
+  }
+  /**
+   * Update the configuration to be used by MrSparql
+   * @param {object} config  configuration for transforming a SPARQL response into visualisation-friendly JSON
+   * @param {string} query the query string of the entire SPARQL query relating to the response to be parsed
+   */
+  updateConfig(config, query) {
+    super.updateConfig(config);
+    this.rawQuery = query;
+    this.parsedQuery = parser(query);
+    this.parsedQuery.prefixes.forEach(prefix => {
+      this.prefixRegister.loadPrefix(prefix);
+    });
+  }
+  /**
+   * parses the SPARQL response and creates visualisation-friendly JSON
+   * @param {object} response A SPARQL JSON response
+   */
+  processRows(response) {
+    response.results.bindings.forEach(row => {
+      this.getItems(row);
+    });
+  }
+  /**
+   * Using the parsed query and SPARQL row, transform the row to an array of processed triples,
+   * @param {object} row A row defining variable keys and response values from the SPARQL response
+   * @returns {object} a processed triple containing the row value paired with corresponding variable name for each part
+   */
+  getProcessedTriples(row) {
+    const processedTriples = [];
+    const keys = ["subject", "predicate", "object"];
+    this.parsedQuery.triples.forEach(queryTriple => {
+      const processed = {};
+      queryTriple.forEach((part, index) => {
+        const key = keys[index];
+        let variable, value;
+        const isVariable = part.charAt(0) === "?";
+        if (isVariable) {
+          variable = part.substring(1);
+          const sparqlObjectResult = row[part.substring(1)];
+          value =
+            typeof sparqlObjectResult === "object"
+              ? sparqlObjectResult.value
+              : null;
+        } else {
+          variable = part;
+          value = part;
+        }
+        processed[key] = {
+          value,
+          variable,
+          part,
+          isVariable
+        };
+      });
+      // validate
+      const isValid = keys.every(key => {
+        const rowHasKey = row.hasOwnProperty(processed[key].variable);
+        const rowHasValue =
+          rowHasKey && row[processed[key].variable].hasOwnProperty("value");
+        return rowHasValue || !processed[key].isVariable;
+      });
+      if (isValid) {
+        processedTriples.push(processed);
+      }
+    });
+    return processedTriples;
+  }
+  /**
+   * Is the processed triple defining a relationship (with a node at each end) or is it defining
+   * properties of a node?
+   * @param {object} triple a processed triple often from a SPARQL response row
+   * @returns {boolean}
+   */
+  findRelationship(triple) {
+    const foundRelationship = this.config.edges.find(edgeConfig => {
+      return edgeConfig.matches.some(match => {
+        // expand prefix
+        const containsNodes =
+          this.config.nodes.hasOwnProperty(triple.subject.variable) &&
+          this.config.nodes.hasOwnProperty(triple.object.variable);
+        return (
+          containsNodes &&
+          this.prefixRegister.isUriMatch(triple.predicate.value, match)
+        );
+      });
+    });
+    return foundRelationship;
+  }
+  /**
+   * create nodes and edges from the current row in the SPARQL response
+   * @param {object} row a row from the SPARQL response array
+   */
+  getItems(row) {
+    // check, is this row defining relationships or properties?
+    const triples = this.getProcessedTriples(row);
+    triples.forEach(triple => {
+      const foundRelationship = this.findRelationship(triple);
+      if (foundRelationship) {
+        ["subject", "object"].forEach(key => {
+          const { variable, value } = triple[key];
+          const nodeDef = this.config.nodes[variable];
+          if (nodeDef && !this.nodesMap.has(value)) {
+            const groupDef = this.config.groups[nodeDef.group];
+            const groupProperties = groupDef.properties || {};
+            const node = Object.assign({}, groupProperties, {
+              id: value,
+              group: nodeDef.group
+            });
+            this.nodesMap.set(value, node);
+          }
+        });
+        const edgeId = [triple.subject.value, triple.object.value].join("-");
+        const edgeProperties = foundRelationship.properties || {};
+        const edge = Object.assign({}, edgeProperties, {
+          id: edgeId,
+          from: triple.subject.value,
+          to: triple.object.value
+        });
+        this.edgeManager.addEdge(edge);
+      } else {
+        // o is a property (p) of s
+        const id = triple.subject.value;
+        const node = this.nodesMap.get(id) || { id, properties: {} };
+        // check if property is defined in config then we can define on node object first-level (otheriwse dump on properties object)
+        const config = this.config.nodes[triple.subject.variable];
+        let assigned = false;
+        for (let key in config) {
+          const val = config[key];
+          if (typeof val === 'object') {
+            if (val.matches) {
+              const isMatch = this.prefixRegister.isUriMatch(triple[val.matches.key].value, val.matches.value);
+              if (isMatch) {
+                node[key] = triple.object.value;
+                assigned = true;
+                break;
+              }
+            }
+          }
+        }
+        if (!assigned) {
+          if (!node.properties) {
+            node.properties = {};
+          }
+          node.properties[triple.predicate.value] = triple.object.value;
+        }
+        this.nodesMap.set(id, node);
+      }
+    });
+  }
+}
+
+/**
+ * @class
+ */
+class MrSparqlVerbose extends MrSparql {
+  static sparql() {
+    return parser.apply(null, arguments);
+  }
+  /**
+   * @constructor
+   * @param {object} config the MrSparql JSON config explaining how to map from a SPARQL response to nodes/edges
+   */
+  constructor(config) {
+    super(config);
+    this.updateConfig(config);
+  }
+  /**
+   * process a SPARQL response into nodes and edges
+   * @param {object} response a SPARQL JSON response
+   */
+  processRows(response) {
+    response.results.bindings.forEach(row => {
+      this.getNodes(row);
+      this.getEdges(row);
+    });
+  }
+  /**
+   * Transform the SPARQL response into an object with an array for nodes and an array for edges
+   * @param {object} response a SPARQL JSON response
    */
   transform(response) {
     this.nodesMap = new Map();
@@ -52,8 +262,8 @@ class MrSparql {
   }
   /**
    * Checks to see if a SPARQL row passes the conditions set out in the definition
-   * @param {object} def - the definition object containing the condition for the parameter under scrutiny
-   * @param {object} row  - a result row (object within an array) from the SPARQL response
+   * @param {object} def the definition object containing the condition for the parameter under scrutiny
+   * @param {object} row  a result row (object within an array) from the SPARQL response
    */
   passesCondition(def, row) {
     const { condition } = def;
@@ -83,8 +293,8 @@ class MrSparql {
   }
   /**
    * Get all the properties for a specified node or edge
-   * @param {object} itemDef - the definition object for the item (will eventually represent a node or edge)
-   * @param {object} row - a result row (object within an array) from the SPARQL response
+   * @param {object} itemDef the definition object for the item (will eventually represent a node or edge)
+   * @param {object} row a result row (object within an array) from the SPARQL response
    */
   getProperties(itemDef, row) {
     const props = {};
@@ -106,7 +316,7 @@ class MrSparql {
   }
   /**
    * Extract all nodes and their properties from a SPARQL result row
-   * @param {object} row - a result row (object within an array) from the SPARQL response
+   * @param {object} row a result row (object within an array) from the SPARQL response
    */
   getNodes(row) {
     this.config.nodes.forEach(nodeDef => {
@@ -131,7 +341,7 @@ class MrSparql {
   }
   /**
    * Extract all edges and their properties from a SPARQL result row
-   * @param {object} row - a result row (object within an array) from the SPARQL response
+   * @param {object} row a result row (object within an array) from the SPARQL response
    */
   getEdges(row) {
     this.config.edges.forEach(edgeDef => {
@@ -156,4 +366,12 @@ class MrSparql {
   }
 }
 
-module.exports = MrSparql;
+// This is to inherit static methods
+Object.setPrototypeOf(MrSparqlSimple, MrSparql);
+Object.setPrototypeOf(MrSparqlVerbose, MrSparql);
+
+module.exports = function(config, query) {
+  return config.verbose
+    ? new MrSparqlVerbose(config)
+    : new MrSparqlSimple(config, query);
+};
