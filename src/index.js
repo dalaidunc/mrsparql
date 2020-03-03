@@ -1,6 +1,6 @@
-const { PrefixRegister } = require("./prefix.js");
-const EdgeManager = require("./edge-manager.js");
-const parser = require("./parser.js");
+import { PrefixRegister } from './prefix';
+import EdgeManager from './edge-manager';
+import parser from './parser';
 
 const defaultConfig = {
   edgeSettings: {
@@ -370,7 +370,7 @@ class MrSparqlVerbose extends MrSparql {
 Object.setPrototypeOf(MrSparqlSimple, MrSparql);
 Object.setPrototypeOf(MrSparqlVerbose, MrSparql);
 
-module.exports = function(config, query) {
+export default function(config, query) {
   return config.verbose
     ? new MrSparqlVerbose(config)
     : new MrSparqlSimple(config, query);

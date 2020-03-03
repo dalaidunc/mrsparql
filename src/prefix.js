@@ -3,7 +3,7 @@
  * e.g. foaf:name gets expanded to http://xmlns.com/foaf/0.1/name
  * @class
  */
-class PrefixRegister {
+export class PrefixRegister {
   /**
    * @constructor
    */
@@ -94,7 +94,7 @@ class PrefixRegister {
  * TODO: should handle blank prefix label (becomes the default prefix)
  * @class
  */
-class Prefix {
+export class Prefix {
   /**
    * @param {string} prefixString - the string representing the prefix (as would be displayed at the top of a turtle file)
    * @constructor
@@ -121,8 +121,3 @@ class Prefix {
     return this.prefixString;
   }
 }
-
-module.exports = {
-  Prefix,
-  PrefixRegister
-};

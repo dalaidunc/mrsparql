@@ -1,4 +1,4 @@
-const { Prefix } = require("./prefix.js");
+import { Prefix } from './prefix';
 /**
  * Parses a SPARQL query to get variables, prefixes and IRIs.
  * No validation to SPARQL spec is done, too big a task for now
@@ -47,7 +47,7 @@ class SparqlParseError extends Error {
 function parser(queryString) {
   let index = 0;
   let modes = [];
-  let submode = null;
+  let mode;
   let currentToken;
   let currentChar;
   const queryVariables = [];
@@ -114,7 +114,7 @@ function parser(queryString) {
   const modeFns = {
     comment() {
       if (c === "\n") {
-        mode.pop();
+        modes.pop();
       }
     },
     token() {
@@ -231,4 +231,4 @@ function parser(queryString) {
   };
 }
 
-module.exports = parser;
+export default parser;

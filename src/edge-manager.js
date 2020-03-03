@@ -99,4 +99,4 @@ class EdgeManager {
   }
 }
 
-module.exports = EdgeManager;
+export default EdgeManager;

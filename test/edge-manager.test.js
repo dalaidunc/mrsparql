@@ -1,4 +1,4 @@
-const EdgeManager = require("../src/edge-manager");
+import EdgeManager from '../src/edge-manager';
 
 function createBundlingStrategy(type, count = true) {
   return {

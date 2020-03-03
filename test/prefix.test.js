@@ -1,4 +1,4 @@
-const { Prefix, PrefixRegister } = require("../src/prefix.js");
+import { Prefix, PrefixRegister } from '../src/prefix';
 
 const prefixes = [
   "cmno: http://purl.org/ontology/classicalmusicnav#",

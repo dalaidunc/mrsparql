@@ -1,4 +1,4 @@
-const parser = require("../src/parser");
+import parser from '../src/parser';
 
 describe("parses prefixes", () => {
 

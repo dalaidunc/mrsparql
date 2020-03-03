@@ -1,5 +1,5 @@
 const fs = require("fs");
-const MrSparql = require("../src/index");
+import MrSparql from '../src/index';
 
 const query = `
 PREFIX cmn: <http://purl.org/NET/classicalmusicnav#>
