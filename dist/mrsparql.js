@@ -544,9 +544,15 @@
      * @param {object} response A SPARQL JSON response
      */
     processRows(response) {
-      response.results.bindings.forEach(row => {
-        this.getItems(row);
-      });
+      if (Array.isArray(response)) {
+        response.forEach(row => {
+          this.getItems(row);
+        });
+      } else {
+        response.results.bindings.forEach(row => {
+          this.getItems(row);
+        });
+      }
     }
     /**
      * Using the parsed query and SPARQL row, transform the row to an array of processed triples,
@@ -697,27 +703,17 @@
      * @param {object} response a SPARQL JSON response
      */
     processRows(response) {
-      response.results.bindings.forEach(row => {
-        this.getNodes(row);
-        this.getEdges(row);
-      });
-    }
-    /**
-     * Transform the SPARQL response into an object with an array for nodes and an array for edges
-     * @param {object} response a SPARQL JSON response
-     */
-    transform(response) {
-      this.nodesMap = new Map();
-      this.edgeManager = new EdgeManager();
-      response.results.bindings.forEach(row => {
-        this.getNodes(row);
-        this.getEdges(row);
-      });
-      const json = {
-        nodes: Array.from(this.nodesMap.values()),
-        edges: this.edgeManager.getEdges()
-      };
-      return json;
+      if (Array.isArray(response)) {
+        response.forEach(row => {
+          this.getNodes(row);
+          this.getEdges(row);
+        });
+      } else {
+        response.results.bindings.forEach(row => {
+          this.getNodes(row);
+          this.getEdges(row);
+        });
+      }
     }
     /**
      * Checks to see if a SPARQL row passes the conditions set out in the definition
